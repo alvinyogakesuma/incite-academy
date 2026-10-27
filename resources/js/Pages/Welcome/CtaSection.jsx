@@ -4,11 +4,13 @@ export default function CtaSection() {
     return (
         <section id="cta-section">
             <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-center gap-6 px-4 py-16 text-center sm:px-8 lg:py-20">
-                <h2 className="font-poppins text-2xl leading-[1.2] font-bold text-black sm:text-3xl lg:text-[39px]">
+                <h2 className="font-poppins text-title sm:text-title-lg lg:text-display font-bold text-neutral-950">
                     Ready to{' '}
-                    <span className="text-blue-700">Start Your Journey?</span>
+                    <span className="text-primary-700">
+                        Start Your Journey?
+                    </span>
                 </h2>
-                <p className="font-inter max-w-[826px] text-base leading-relaxed text-gray-600">
+                <p className="font-inter text-body max-w-[826px] text-neutral-600">
                     Join thousands of students who are already learning with
                     INCITE Academy. Start your educational journey today and
                     unlock your full potential.

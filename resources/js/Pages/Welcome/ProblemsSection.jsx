@@ -18,14 +18,14 @@ const problems = [
 
 export default function ProblemsSection() {
     return (
-        <section id="problems-section" className="bg-blue-50">
+        <section id="problems-section" className="bg-primary-50">
             <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-10 px-4 py-16 sm:px-8 lg:py-20">
                 <div className="flex flex-col gap-2 text-center">
-                    <h2 className="font-poppins text-2xl leading-[1.2] font-bold text-black sm:text-3xl lg:text-[39px]">
+                    <h2 className="font-poppins text-title sm:text-title-lg lg:text-display font-bold text-neutral-950">
                         Have You Ever Faced{' '}
-                        <span className="text-blue-700">These Problems</span>
+                        <span className="text-primary-700">These Problems</span>
                     </h2>
-                    <p className="font-inter text-base leading-relaxed text-gray-600">
+                    <p className="font-inter text-body text-neutral-600">
                         Preparing for the CBT INCITE test can be overwhelming.
                         See if any of these sound familiar to you:
                     </p>
@@ -36,7 +36,7 @@ export default function ProblemsSection() {
                         alt="Student looking overwhelmed by scattered study materials"
                         loading="lazy"
                         decoding="async"
-                        className="shadow-card hidden aspect-square h-[300px] rounded-2xl object-cover sm:h-[380px] md:block lg:h-[454px]"
+                        className="hidden aspect-square h-[300px] rounded-2xl object-cover shadow-md sm:h-[380px] md:block lg:h-[454px]"
                     />
                     <ol className="flex min-w-0 flex-1 flex-col gap-8 pt-0 lg:gap-14 lg:pt-4">
                         {problems.map((problem, index) => (
@@ -44,14 +44,14 @@ export default function ProblemsSection() {
                                 key={problem.title}
                                 className="flex items-start gap-4"
                             >
-                                <div className="font-inter flex size-7 shrink-0 items-center justify-center rounded-full bg-blue-700 text-base leading-none font-bold text-white">
+                                <div className="font-inter bg-primary-700 text-body flex size-7 shrink-0 items-center justify-center rounded-full leading-none font-bold text-neutral-50">
                                     {index + 1}
                                 </div>
                                 <div className="flex flex-col gap-2">
-                                    <h3 className="font-poppins text-lg leading-[1.2] font-semibold text-black lg:text-xl">
+                                    <h3 className="font-poppins text-body-lg font-semibold text-neutral-950">
                                         {problem.title}
                                     </h3>
-                                    <p className="font-inter text-base leading-relaxed text-gray-600">
+                                    <p className="font-inter text-body text-neutral-600">
                                         {problem.description}
                                     </p>
                                 </div>
