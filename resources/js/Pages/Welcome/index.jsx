@@ -1,15 +1,11 @@
 import { Link } from '@inertiajs/react';
-import {
-    CirclePile,
-    Users,
-    Clock,
-    MonitorPlay,
-    ChevronDown,
-} from 'lucide-react';
+import { CirclePile, ChevronDown } from 'lucide-react';
 import { Accordion } from 'radix-ui';
 
 import Navbar from '@/components/Navbar';
 import HeroSection from './HeroSection';
+import ProblemsSection from './ProblemsSection';
+import FeaturesSection from './FeaturesSection';
 
 export default function Welcome() {
     return (
@@ -17,141 +13,8 @@ export default function Welcome() {
             <Navbar />
             <main>
                 <HeroSection />
-                <section id="problems-section" className="bg-blue-50">
-                    <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-10 px-4 py-16 sm:px-8 lg:py-20">
-                        <div className="flex flex-col gap-2 text-center">
-                            <h2 className="font-poppins text-2xl leading-[1.2] font-bold text-black sm:text-3xl lg:text-[39px]">
-                                Have You Ever Faced{' '}
-                                <span className="text-blue-700">
-                                    These Problems
-                                </span>
-                            </h2>
-                            <p className="font-inter text-base leading-relaxed text-gray-600">
-                                Preparing for the CBT INCITE test can be
-                                overwhelming. See if any of these sound familiar
-                                to you:
-                            </p>
-                        </div>
-                        <div className="flex w-full flex-col gap-8 md:flex-row md:gap-14">
-                            <img
-                                src="/images/problems-section-image.png"
-                                alt="Student looking overwhelmed by scattered study materials"
-                                loading="lazy"
-                                decoding="async"
-                                className="shadow-card hidden aspect-square h-[300px] rounded-2xl object-cover sm:h-[380px] md:block lg:h-[454px]"
-                            />
-                            <ol className="flex min-w-0 flex-1 flex-col gap-8 pt-0 lg:gap-14 lg:pt-4">
-                                <li className="flex items-start gap-4">
-                                    <div className="font-inter flex size-7 shrink-0 items-center justify-center rounded-full bg-blue-700 text-base leading-none font-bold text-white">
-                                        1
-                                    </div>
-                                    <div className="flex flex-col gap-2">
-                                        <h3 className="font-poppins text-lg leading-[1.2] font-semibold text-black lg:text-xl">
-                                            Lack of Comprehensive Resources
-                                        </h3>
-                                        <p className="font-inter text-base leading-relaxed text-gray-600">
-                                            Students struggle to find all-in-one
-                                            study materials that cover every
-                                            question type and topic area for the
-                                            CBT INCITE test.
-                                        </p>
-                                    </div>
-                                </li>
-                                <li className="flex items-start gap-4">
-                                    <div className="font-inter flex size-7 shrink-0 items-center justify-center rounded-full bg-blue-700 text-base leading-none font-bold text-white">
-                                        2
-                                    </div>
-                                    <div className="flex flex-col gap-2">
-                                        <h3 className="font-poppins text-lg leading-[1.2] font-semibold text-black lg:text-xl">
-                                            No Clear Study Path
-                                        </h3>
-                                        <p className="font-inter text-base leading-relaxed text-gray-600">
-                                            Without structured guidance,
-                                            students waste time on unfocused
-                                            preparation and don't know where to
-                                            start or what to prioritize.
-                                        </p>
-                                    </div>
-                                </li>
-                                <li className="flex items-start gap-4">
-                                    <div className="font-inter flex size-7 shrink-0 items-center justify-center rounded-full bg-blue-700 text-base leading-none font-bold text-white">
-                                        3
-                                    </div>
-                                    <div className="flex flex-col gap-2">
-                                        <h3 className="font-poppins text-lg leading-[1.2] font-semibold text-black lg:text-xl">
-                                            Limited Practice Opportunities
-                                        </h3>
-                                        <p className="font-inter text-base leading-relaxed text-gray-600">
-                                            Many students lack access to enough
-                                            practice questions and realistic
-                                            test simulations to build confidence
-                                            and identify weak areas.
-                                        </p>
-                                    </div>
-                                </li>
-                            </ol>
-                        </div>
-                    </div>
-                </section>
-                <section id="features-section" className="bg-blue-900">
-                    <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-10 px-4 py-12 sm:px-8 lg:py-16">
-                        <div className="flex flex-col gap-2 text-center">
-                            <h2 className="font-poppins text-2xl leading-[1.2] font-bold text-white sm:text-3xl lg:text-[39px]">
-                                Your Success is Our Priority
-                            </h2>
-                            <p className="font-inter max-w-[772px] text-base leading-relaxed text-gray-300">
-                                Don't worry about scattered resources or
-                                confusing study paths. We've built a complete
-                                solution that adapts to your needs and fits your
-                                lifestyle.
-                            </p>
-                        </div>
-                        <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-3">
-                            <div className="flex flex-col gap-8 rounded-2xl bg-white p-6">
-                                <div className="shrink-0 self-start rounded-full bg-blue-50 p-4">
-                                    <Users className="size-8 text-blue-700" />
-                                </div>
-                                <div className="flex flex-col gap-2">
-                                    <h3 className="font-poppins text-xl leading-[1.2] font-semibold text-black">
-                                        Comprehensive Support
-                                    </h3>
-                                    <p className="font-inter text-[13px] leading-[1.2] text-gray-600">
-                                        All-in-one platform with everything you
-                                        need to succeed in one place
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex flex-col gap-8 rounded-2xl bg-white p-6">
-                                <div className="shrink-0 self-start rounded-full bg-blue-50 p-4">
-                                    <Clock className="size-8 text-blue-700" />
-                                </div>
-                                <div className="flex flex-col gap-2">
-                                    <h3 className="font-poppins text-xl leading-[1.2] font-semibold text-black">
-                                        Learn on Your Schedule
-                                    </h3>
-                                    <p className="font-inter text-[13px] leading-[1.2] text-gray-600">
-                                        24/7 access to course materials from any
-                                        device, anywhere
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex flex-col gap-8 rounded-2xl bg-white p-6">
-                                <div className="shrink-0 self-start rounded-full bg-blue-50 p-4">
-                                    <MonitorPlay className="size-8 text-blue-700" />
-                                </div>
-                                <div className="flex flex-col gap-2">
-                                    <h3 className="font-poppins text-xl leading-[1.2] font-semibold text-black">
-                                        Interactive Tools
-                                    </h3>
-                                    <p className="font-inter text-[13px] leading-[1.2] text-gray-600">
-                                        Practice with simulated tests and track
-                                        your progress in real-time
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+                <ProblemsSection />
+                <FeaturesSection />
                 <section id="faq-section" className="bg-blue-50">
                     <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-10 px-4 py-16 sm:px-8 lg:py-20">
                         <div className="flex flex-col gap-2 text-center">
