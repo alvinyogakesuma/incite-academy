@@ -1,4 +1,6 @@
 import { Link } from '@inertiajs/react';
+import { Form } from 'radix-ui';
+import { Loader2 } from 'lucide-react';
 
 const variantClasses = {
     solid: 'bg-primary-700 text-neutral-50 hover:opacity-90',
@@ -9,15 +11,32 @@ const variantClasses = {
 export default function Button({
     href,
     variant = 'solid',
+    fullWidth = false,
+    disabled = false,
+    loading = false,
     className = '',
     children,
+    ...props
 }) {
+    const classes = `font-inter cursor-pointer items-center justify-center gap-2 rounded-full px-4 py-2 font-bold whitespace-nowrap text-body-sm transition-all duration-200 active:scale-95 shadow-md shadow-primary-700/10 hover:shadow-lg hover:shadow-primary-700/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 disabled:pointer-events-none disabled:opacity-50 ${fullWidth ? 'flex w-full' : 'inline-flex w-fit'} ${variantClasses[variant]} ${className}`;
+
+    if (href) {
+        return (
+            <Link href={href} className={classes} {...props}>
+                {children}
+            </Link>
+        );
+    }
+
     return (
-        <Link
-            href={href}
-            className={`font-inter text-body-sm focus-visible:outline-primary-700 inline-flex cursor-pointer items-center justify-center rounded-full px-4 py-2 font-bold whitespace-nowrap transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-95 ${variantClasses[variant]} ${className}`}
+        <Form.Submit
+            className={classes}
+            disabled={disabled || loading}
+            aria-busy={loading}
+            {...props}
         >
+            {loading && <Loader2 className="size-4 animate-spin" />}
             {children}
-        </Link>
+        </Form.Submit>
     );
 }

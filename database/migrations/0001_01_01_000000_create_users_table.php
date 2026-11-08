@@ -15,8 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('google_id')->nullable()->unique();
+            $table->foreignId('major_departement_id')->nullable()->constrained('majors_departements')->nullOnDelete();
+            $table->string('nim_nip', 50)->nullable()->unique();
+            $table->enum('role', ['student', 'admin'])->default('student');
+            $table->unsignedInteger('total_points')->default(0);
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
