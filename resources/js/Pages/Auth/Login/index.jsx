@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useForm, Link } from '@inertiajs/react';
+import { useForm, Link, usePage } from '@inertiajs/react';
 import { LogIn, Mail, Lock, Check } from 'lucide-react';
 import { Form, Checkbox } from 'radix-ui';
 import EmailField from '@/components/EmailField';
@@ -22,13 +22,24 @@ const loginSchema = z.object({
 });
 
 export default function Login({ status, canResetPassword }) {
+    const { error } = usePage().props;
+
     const [statusToastOpen, setStatusToastOpen] = useState(Boolean(status));
+    const [errorToastOpen, setErrorToastOpen] = useState(Boolean(error));
+    const [errorToastMessage, setErrorToastMessage] = useState(error);
 
     useEffect(() => {
         if (status) {
             setStatusToastOpen(true);
         }
     }, [status]);
+
+    useEffect(() => {
+        if (error) {
+            setErrorToastMessage(error);
+            setErrorToastOpen(true);
+        }
+    }, [error]);
 
     const {
         data,
@@ -179,6 +190,14 @@ export default function Login({ status, canResetPassword }) {
                 title="Success"
                 description={status}
                 type="success"
+            />
+
+            <Toast
+                open={errorToastOpen}
+                onOpenChange={setErrorToastOpen}
+                title="Sign In Failed"
+                description={errorToastMessage}
+                type="error"
             />
         </>
     );
