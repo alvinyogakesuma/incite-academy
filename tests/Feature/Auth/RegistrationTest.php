@@ -30,7 +30,7 @@ test('new users can register', function () {
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+    $response->assertRedirect(route('home', absolute: false));
 
     $user = User::where('email', 'alvin.121140154@student.itera.ac.id')->first();
 

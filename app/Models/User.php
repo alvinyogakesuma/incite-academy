@@ -18,6 +18,14 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasFactory, Notifiable;
 
     /**
+     * Get the route name the user should land on after login.
+     */
+    public static function homeRoute(): string
+    {
+        return auth()->user()?->role === 'admin' ? 'dashboard' : 'home';
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
