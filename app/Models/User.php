@@ -22,7 +22,15 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public static function homeRoute(): string
     {
-        return auth()->user()?->role === 'admin' ? 'dashboard' : 'home';
+        return auth()->user()?->isAdmin() ? 'dashboard' : 'home';
+    }
+
+    /**
+     * Determine if the user is an administrator.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
     }
 
     /**
