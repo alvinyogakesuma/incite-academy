@@ -59,6 +59,32 @@ class UserController extends Controller
     }
 
     /**
+     * Update the given user.
+     */
+    public function update(UserUpdateRequest $request, User $user): RedirectResponse
+    {
+        Gate::authorize('update', $user);
+
+        $validated = $request->validated();
+
+        $majorDepartement = $this->resolveMajorDepartement($validated['major_department']);
+
+        $originalRole = $user->getOriginal('role');
+
+        $user->update([
+            ...$validated,
+            'major_departement_id' => $majorDepartement->id,
+        ]);
+
+        // Force re-login when the role changed.
+        if ($validated['role'] !== $originalRole) {
+            DB::table('sessions')->where('user_id', $user->id)->delete();
+        }
+
+        return redirect()->route('dashboard.users');
+    }
+
+    /**
      * Resolve a department name to its model.
      */
     private function resolveMajorDepartement(string $name): MajorDepartement
