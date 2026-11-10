@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { usePage } from '@inertiajs/react';
 import { Dialog } from 'radix-ui';
-import { LayoutDashboard, Users } from 'lucide-react';
+import { LayoutDashboard, Users, BookOpen } from 'lucide-react';
 import AdminSidebarHeader from './AdminSidebarHeader';
 import AdminSidebarMenu from './AdminSidebarMenu';
 import AdminSidebarProfile from './AdminSidebarProfile';
@@ -37,6 +37,12 @@ export default function AdminSidebar({ isMobileOpen, setIsMobileOpen }) {
             icon: Users,
             href: '/dashboard/users',
             active: cleanUrl.startsWith('/dashboard/users'),
+        },
+        {
+            name: 'Courses',
+            icon: BookOpen,
+            href: '/dashboard/courses',
+            active: cleanUrl.startsWith('/dashboard/courses'),
         },
     ];
 

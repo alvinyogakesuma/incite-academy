@@ -24,6 +24,10 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         return Inertia::render('Dashboard/Overview');
     })->name('dashboard');
 
+    Route::get('/dashboard/courses', function () {
+        return Inertia::render('Dashboard/Courses');
+    })->name('dashboard.courses');
+
     Route::get('/dashboard/users', [UserController::class, 'index'])->name('dashboard.users');
     Route::post('/dashboard/users', [UserController::class, 'store'])->name('dashboard.users.store');
     Route::put('/dashboard/users/{user}', [UserController::class, 'update'])->name('dashboard.users.update');
