@@ -18,6 +18,11 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             MajorDepartementSeeder::class,
+            CourseSeeder::class,
+            ModuleSeeder::class,
+            LessonSeeder::class,
+            QuestionSeeder::class,
+            AnswerSeeder::class,
         ]);
 
         if (User::query()->where('email', 'test@example.com')->doesntExist()) {
