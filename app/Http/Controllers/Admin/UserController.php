@@ -85,6 +85,21 @@ class UserController extends Controller
     }
 
     /**
+     * Remove the given user.
+     */
+    public function destroy(User $user): RedirectResponse
+    {
+        Gate::authorize('delete', $user);
+
+        DB::table('sessions')->where('user_id', $user->id)->delete();
+
+        $user->delete();
+
+        return redirect()->route('dashboard.users');
+    }
+
+
+    /**
      * Resolve a department name to its model.
      */
     private function resolveMajorDepartement(string $name): MajorDepartement
