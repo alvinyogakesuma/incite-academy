@@ -5,6 +5,7 @@ export default function SelectField({
     name,
     label,
     options = [],
+    groups = null,
     value,
     icon: Icon,
     onValueChange,
@@ -15,6 +16,16 @@ export default function SelectField({
     className = '',
 }) {
     const isInvalid = Boolean(errorMessage);
+
+    const renderItem = (option) => (
+        <Select.Item
+            key={option}
+            value={option}
+            className="font-inter data-[highlighted]:bg-primary-50/60 data-[highlighted]:text-primary-700 data-[state=checked]:text-primary-700 text-body-sm flex cursor-pointer items-center truncate rounded-xl px-3.5 py-2.5 text-slate-700 transition-colors duration-150 outline-none select-none data-[state=checked]:font-bold"
+        >
+            <Select.ItemText>{option}</Select.ItemText>
+        </Select.Item>
+    );
 
     // the Select tree — identical in both modes (Select.* is form-agnostic)
     const selectTree = (
@@ -50,15 +61,19 @@ export default function SelectField({
                     className="z-50 max-h-64 w-max max-w-80 min-w-[var(--radix-select-trigger-width)] overflow-y-auto rounded-2xl border border-neutral-950/5 bg-neutral-50 p-1.5 shadow-xl"
                 >
                     <Select.Viewport>
-                        {options.map((option) => (
-                            <Select.Item
-                                key={option}
-                                value={option}
-                                className="font-inter data-[highlighted]:bg-primary-50/60 data-[highlighted]:text-primary-700 data-[state=checked]:text-primary-700 text-body-sm flex cursor-pointer items-center truncate rounded-xl px-3.5 py-2.5 text-slate-700 transition-colors duration-150 outline-none select-none data-[state=checked]:font-bold"
-                            >
-                                <Select.ItemText>{option}</Select.ItemText>
-                            </Select.Item>
-                        ))}
+                        {groups
+                            ? groups.map((group) => (
+                                  <Select.Group
+                                      key={group.label}
+                                      className="mb-1 last:mb-0"
+                                  >
+                                      <Select.Label className="font-inter px-3.5 py-1.5 text-[10px] font-bold tracking-wider text-neutral-500 uppercase">
+                                          {group.label}
+                                      </Select.Label>
+                                      {group.options.map(renderItem)}
+                                  </Select.Group>
+                              ))
+                            : options.map(renderItem)}
                     </Select.Viewport>
                 </Select.Content>
             </Select.Portal>

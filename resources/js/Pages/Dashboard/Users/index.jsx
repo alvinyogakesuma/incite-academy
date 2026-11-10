@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { router } from '@inertiajs/react';
 import orderBy from 'lodash/orderBy';
 import { Plus } from 'lucide-react';
 import AdminLayout from '@/layout/AdminLayout';
@@ -6,13 +7,13 @@ import AdminHeader from '@/components/AdminHeader';
 import SearchBar from '@/components/SearchBar';
 import UserList from '@/components/UserList';
 import Pagination from '@/components/Pagination';
-import { DUMMY_USERS } from '@/data/dummyUsers';
+import UserFormDialog from '@/components/UserFormDialog';
+import DeleteConfirmationDialog from '@/components/DeleteConfirmationDialog';
+import Toast from '@/components/Toast';
 
 const PAGE_SIZE_OPTIONS = [5, 10, 20];
 
-export default function Users() {
-    const users = DUMMY_USERS;
-
+export default function Users({ users = [], programStudi = [], upaUpt = [] }) {
     // Search, Filtering, and Sorting State (all client-side)
     const [searchQuery, setSearchQuery] = useState(''); // search bar state
     const [roleFilter, setRoleFilter] = useState('All'); // role selection state
@@ -23,6 +24,38 @@ export default function Users() {
     // Pagination State
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
+
+    // Modal Control States
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
+    // Toast State
+    const [toast, setToast] = useState(null);
+
+    // Editing/Deleting Data States
+    const [userToEdit, setUserToEdit] = useState(null);
+    const [userToDelete, setUserToDelete] = useState(null);
+
+    const showToast = (type, title, description) => {
+        setToast({ type, title, description });
+        setTimeout(() => setToast(null), 5000);
+    };
+
+    const startAdd = () => {
+        setUserToEdit(null);
+        setIsFormOpen(true);
+    };
+
+    const startEdit = (user) => {
+        setUserToEdit(user);
+        setIsFormOpen(true);
+    };
+
+    const startDelete = (user) => {
+        setUserToDelete(user);
+        setIsDeleteOpen(true);
+    };
+
     // Reset Filters to defaults
     const handleResetFilters = () => {
         setSearchQuery('');
@@ -48,6 +81,46 @@ export default function Users() {
             setSortDirection('asc');
         }
         setCurrentPage(1);
+    };
+
+    // Handle form save/update — the dialog performs the request itself
+    // (via its useForm instance) and calls onSuccess/onError here.
+    const handleFormSuccess = (isEdit) => {
+        setIsFormOpen(false);
+        showToast(
+            'success',
+            isEdit ? 'User successfully updated!' : 'User successfully added!',
+        );
+    };
+
+    const handleFormError = () => {
+        showToast('error', 'Validation Error', 'Please check the form fields.');
+    };
+
+    // Confirm and execute delete.
+    const confirmDelete = () => {
+        if (!userToDelete) return;
+
+        router.delete(`/dashboard/users/${userToDelete.id}`, {
+            onSuccess: () => {
+                setIsDeleteOpen(false);
+                setUserToDelete(null);
+                showToast('success', 'User successfully deleted!');
+
+                // Clamp the current page if the last item on it was removed
+                const remainingFiltered = sortedUsers.length - 1;
+                const maxPage = Math.max(
+                    1,
+                    Math.ceil(remainingFiltered / pageSize),
+                );
+                if (currentPage > maxPage) {
+                    setCurrentPage(maxPage);
+                }
+            },
+            onError: () => {
+                showToast('error', 'Failed to delete user.');
+            },
+        });
     };
 
     // Stage 1 = filter the users
@@ -137,7 +210,7 @@ export default function Users() {
                     subtitle="Manage platform users, roles, point achievements and departments."
                     label="Add User"
                     icon={Plus}
-                    onClick={() => {}}
+                    onClick={startAdd}
                 />
 
                 {/* ========== FILTERS & CONTROLS ========== */}
@@ -153,8 +226,8 @@ export default function Users() {
                 {/* ========== TABLE CARD LAYOUT ========== */}
                 <UserList
                     users={paginatedUsers}
-                    onEdit={() => {}}
-                    onDelete={() => {}}
+                    onEdit={startEdit}
+                    onDelete={startDelete}
                     sortField={sortField}
                     sortDirection={sortDirection}
                     onSort={handleSort}
@@ -173,7 +246,38 @@ export default function Users() {
                     }
                     pageSizeOptions={PAGE_SIZE_OPTIONS}
                 />
+
+                {/* ========== ADD/EDIT DIALOG (MODAL) ========== */}
+                <UserFormDialog
+                    open={isFormOpen}
+                    onOpenChange={setIsFormOpen}
+                    user={userToEdit}
+                    onSuccess={handleFormSuccess}
+                    onError={handleFormError}
+                    programStudi={programStudi}
+                    upaUpt={upaUpt}
+                />
+
+                {/* ========== DELETE CONFIRMATION ALERT DIALOG (MODAL) ========== */}
+                <DeleteConfirmationDialog
+                    open={isDeleteOpen}
+                    onOpenChange={setIsDeleteOpen}
+                    title="Delete User Account"
+                    description={`Are you sure you want to delete ${userToDelete?.name}? This action will permanently remove this user profile from the platform directory.`}
+                    confirmLabel="Delete User"
+                    onConfirm={confirmDelete}
+                    isSubmitting={false}
+                />
             </div>
+
+            {/* ========== TOAST NOTIFICATION ========== */}
+            <Toast
+                open={Boolean(toast)}
+                onOpenChange={(open) => !open && setToast(null)}
+                title={toast?.title}
+                description={toast?.description}
+                type={toast?.type}
+            />
         </>
     );
 }

@@ -26,6 +26,14 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * The study program / UPA unit the user belongs to.
+     */
+    public function majorDepartement()
+    {
+        return $this->belongsTo(MajorDepartement::class);
+    }
+
+    /**
      * Determine if the user is an administrator.
      */
     public function isAdmin(): bool
