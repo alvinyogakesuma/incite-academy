@@ -1,7 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import { LayoutDashboard, LogOut } from 'lucide-react';
 
-export default function Dashboard({ auth }) {
+export default function Overview({ auth }) {
     return (
         <>
             <Head title="Dashboard" />
