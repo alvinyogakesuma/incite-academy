@@ -14,8 +14,8 @@ const loginSchema = z.object({
     email: z
         .string()
         .regex(
-            /^[a-z0-9.-]+\.\d{9}@student\.itera\.ac\.id$/,
-            'Email must follow the format firstname.nim@student.itera.ac.id',
+            /@(?:[a-z0-9-]+\.)*itera\.ac\.id$/,
+            'Email must be an ITERA domain email',
         ),
     password: z.string().min(1, 'Password is required'),
     remember: z.boolean(),
