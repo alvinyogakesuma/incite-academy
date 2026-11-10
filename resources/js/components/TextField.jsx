@@ -9,14 +9,45 @@ export default function TextField({
     onChange,
     placeholder,
     autoComplete,
-    errorMessage,
+    errorMessage = '',
     required = false,
     readOnly = false,
+    inForm = true,
     children,
     ...props
 }) {
     const isInvalid = Boolean(errorMessage);
 
+    // ── Standalone mode: only the relative wrapper ──────────────
+    // No label, no error text, no outer column, no Radix —
+    // the caller composes those around it.
+    if (!inForm) {
+        return (
+            <div className="group relative flex items-center">
+                {Icon && (
+                    <Icon
+                        className={`${isInvalid ? 'text-error-400' : 'group-focus-within:text-primary-700 text-neutral-400'} pointer-events-none absolute inset-y-0 left-0 z-10 ml-4 size-4 shrink-0 self-center transition-colors duration-200`}
+                    />
+                )}
+                <input
+                    className={`font-inter text-body-sm w-full rounded-full border border-neutral-950/5 py-2.5 pr-4.5 pl-11 transition-all duration-200 ease-in-out outline-none placeholder:text-neutral-500/50 focus:ring-4 ${readOnly ? 'cursor-not-allowed border-neutral-950/5 bg-neutral-100 text-neutral-500' : 'bg-primary-50/40 focus:border-primary-700 focus:ring-primary-700/10 text-neutral-900 hover:border-neutral-950/15 focus:bg-white'}`}
+                    id={name}
+                    name={name}
+                    type={type}
+                    value={value}
+                    onChange={onChange}
+                    required={required}
+                    placeholder={placeholder}
+                    autoComplete={autoComplete}
+                    readOnly={readOnly}
+                    {...props}
+                />
+                {children}
+            </div>
+        );
+    }
+
+    // ── Form mode: full Radix form field ────────────────────────
     return (
         <Form.Field
             name={name}

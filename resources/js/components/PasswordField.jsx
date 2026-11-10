@@ -10,8 +10,9 @@ export default function PasswordField({
     onChange,
     placeholder,
     autoComplete = 'off',
-    errorMessage,
+    errorMessage = '',
     required = false,
+    inForm = true,
     ...props
 }) {
     const [showPassword, setShowPassword] = useState(false);
@@ -28,6 +29,7 @@ export default function PasswordField({
             placeholder={placeholder}
             onChange={onChange}
             required={required}
+            inForm={inForm}
             {...props}
         >
             <button

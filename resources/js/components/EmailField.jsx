@@ -9,25 +9,25 @@ export default function EmailField({
     onChange,
     placeholder,
     autoComplete = 'email',
-    errorMessage,
+    errorMessage = '',
     required = true,
+    inForm = true,
     ...props
 }) {
     return (
-        <>
-            <TextField
-                name={name}
-                label={label}
-                type={type}
-                icon={Icon}
-                value={value}
-                errorMessage={errorMessage}
-                autoComplete={autoComplete}
-                placeholder={placeholder}
-                onChange={onChange}
-                required={required}
-                {...props}
-            />
-        </>
+        <TextField
+            name={name}
+            label={label}
+            type={type}
+            icon={Icon}
+            value={value}
+            errorMessage={errorMessage}
+            autoComplete={autoComplete}
+            placeholder={placeholder}
+            onChange={onChange}
+            required={required}
+            inForm={inForm}
+            {...props}
+        />
     );
 }
