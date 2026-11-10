@@ -41,6 +41,24 @@ class UserController extends Controller
     }
 
     /**
+     * Store a newly created user.
+     */
+    public function store(UserStoreRequest $request): RedirectResponse
+    {
+        $validated = $request->validated();
+
+        $majorDepartement = $this->resolveMajorDepartement($validated['major_department']);
+
+        User::create([
+            ...$validated,
+            'major_departement_id' => $majorDepartement->id,
+            'password' => Hash::make('Password1!'),
+        ]);
+
+        return redirect()->route('dashboard.users');
+    }
+
+    /**
      * Resolve a department name to its model.
      */
     private function resolveMajorDepartement(string $name): MajorDepartement
