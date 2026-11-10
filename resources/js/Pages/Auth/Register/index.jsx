@@ -262,7 +262,7 @@ export default function Register({ majorDepartements }) {
                     required
                 />
 
-                <Button fullWidth loading={processing}>
+                <Button as="submit" fullWidth loading={processing}>
                     Sign Up
                 </Button>
 

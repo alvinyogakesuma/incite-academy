@@ -29,7 +29,7 @@ export default function VerifyEmail({ status }) {
                 className="flex w-full flex-col gap-5"
                 onSubmit={resendVerificationLink}
             >
-                <Button fullWidth loading={processing}>
+                <Button as="submit" fullWidth loading={processing}>
                     Resend Verification Email
                 </Button>
 

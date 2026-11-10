@@ -78,7 +78,7 @@ export default function ForgotPassword({ status }) {
                     required
                 />
 
-                <Button fullWidth loading={processing}>
+                <Button as="submit" fullWidth loading={processing}>
                     Send Reset Link
                 </Button>
 

@@ -146,7 +146,7 @@ export default function ResetPassword({ email, token }) {
                 required
             />
 
-            <Button fullWidth loading={processing}>
+            <Button as="submit" fullWidth loading={processing}>
                 Reset Password
             </Button>
 

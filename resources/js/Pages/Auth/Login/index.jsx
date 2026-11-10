@@ -173,7 +173,7 @@ export default function Login({ status, canResetPassword }) {
                     )}
                 </div>
 
-                <Button fullWidth loading={processing}>
+                <Button as="submit" fullWidth loading={processing}>
                     Sign In
                 </Button>
 

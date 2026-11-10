@@ -1,8 +1,8 @@
 // import { useState, useMemo } from 'react';
 // import { Head, router, usePage } from '@inertiajs/react';
-// import { Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import AdminLayout from '@/layout/AdminLayout';
-// import DashboardHeader from '../../../components/Admin/DashboardHeader';
+import AdminHeader from '@/components/AdminHeader';
 // import Toast from '@/components/Toast';
 // import SearchBar from '../../../components/Admin/SearchBar';
 // import Pagination from '../../../components/Admin/Pagination';
@@ -11,9 +11,20 @@ import AdminLayout from '@/layout/AdminLayout';
 // import UserFormDialog from '../../../components/Admin/User/UserFormDialog';
 
 export default function Users() {
-    <>
-        <div className="space-y-8">{/* Header Section */}</div>
-    </>;
+    return (
+        <>
+            <div className="space-y-8">
+                {/* Header Section */}
+                <AdminHeader
+                    title="Users Management"
+                    subtitle="Manage platform users, roles, point achievements and departments."
+                    label="Add User"
+                    icon={Plus}
+                    onClick={() => {}}
+                />
+            </div>
+        </>
+    );
 }
 
 // Wrap inside persistent AdminLayout dashboard wrapper
