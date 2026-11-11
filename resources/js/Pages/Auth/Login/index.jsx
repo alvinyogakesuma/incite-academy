@@ -8,16 +8,13 @@ import Button from '@/components/Button';
 import AuthFooter from '@/components/AuthFooter';
 import Toast from '@/components/Toast';
 import AuthLayout from '@/layout/AuthLayout';
+import zodFieldErrors from '@/utils/zodFieldErrors';
+import { emailLoginRule, passwordLoginRule } from '@/utils/zodRules.js';
 import { z } from 'zod';
 
 const loginSchema = z.object({
-    email: z
-        .string()
-        .regex(
-            /@(?:[a-z0-9-]+\.)*itera\.ac\.id$/,
-            'Email must be an ITERA domain email',
-        ),
-    password: z.string().min(1, 'Password is required'),
+    email: emailLoginRule,
+    password: passwordLoginRule,
     remember: z.boolean(),
 });
 
@@ -74,13 +71,8 @@ export default function Login({ status, canResetPassword }) {
         const result = loginSchema.safeParse(data);
 
         if (!result.success) {
-            const fieldErrors = {};
-            for (const issue of result.error.issues) {
-                if (!fieldErrors[issue.path[0]]) {
-                    fieldErrors[issue.path[0]] = issue.message;
-                }
-            }
-            setError(fieldErrors);
+            clearErrors();
+            setError(zodFieldErrors(result.error));
             return;
         }
 

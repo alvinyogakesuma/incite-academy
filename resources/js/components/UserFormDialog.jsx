@@ -15,6 +15,7 @@ import TextField from '@/components/TextField';
 import NumberField from '@/components/NumberField';
 import SelectField from '@/components/SelectField';
 import Button from '@/components/Button';
+import zodFieldErrors from '@/utils/zodFieldErrors';
 
 const EMPTY_FORM = {
     name: '',
@@ -108,13 +109,7 @@ export default function UserFormDialog({
         const result = userSchema.safeParse(data);
 
         if (!result.success) {
-            const fieldErrors = {};
-            for (const issue of result.error.issues) {
-                if (!fieldErrors[issue.path[0]]) {
-                    fieldErrors[issue.path[0]] = issue.message;
-                }
-            }
-            setError(fieldErrors);
+            setError(zodFieldErrors(result.error));
             return;
         }
 

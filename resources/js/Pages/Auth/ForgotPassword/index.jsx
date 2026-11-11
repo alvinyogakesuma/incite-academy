@@ -7,15 +7,12 @@ import Button from '@/components/Button';
 import AuthFooter from '@/components/AuthFooter';
 import Toast from '@/components/Toast';
 import AuthLayout from '@/layout/AuthLayout';
+import zodFieldErrors from '@/utils/zodFieldErrors';
+import { emailMahasiswaRule } from '@/utils/zodRules.js';
 import { z } from 'zod';
 
 const forgotPasswordSchema = z.object({
-    email: z
-        .string()
-        .regex(
-            /^[a-z0-9.-]+\.\d{9}@student\.itera\.ac\.id$/,
-            'Email must follow the format firstname.nim@student.itera.ac.id',
-        ),
+    email: emailMahasiswaRule,
 });
 
 export default function ForgotPassword({ status }) {
@@ -50,7 +47,8 @@ export default function ForgotPassword({ status }) {
         const result = forgotPasswordSchema.safeParse(data);
 
         if (!result.success) {
-            setError('email', result.error.issues[0].message);
+            clearErrors();
+            setError(zodFieldErrors(result.error));
             return;
         }
 

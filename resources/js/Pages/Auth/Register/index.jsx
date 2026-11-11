@@ -1,6 +1,13 @@
 import { useForm } from '@inertiajs/react';
-import { useRef } from 'react';
-import { User, Mail, Hash, University, Lock } from 'lucide-react';
+import { useState } from 'react';
+import {
+    User,
+    Mail,
+    Hash,
+    University,
+    Lock,
+    GraduationCap,
+} from 'lucide-react';
 import { Form } from 'radix-ui';
 import TextField from '@/components/TextField';
 import EmailField from '@/components/EmailField';
@@ -10,7 +17,23 @@ import SelectField from '@/components/SelectField';
 import PasswordField from '@/components/PasswordField';
 import Button from '@/components/Button';
 import AuthFooter from '@/components/AuthFooter';
+import zodFieldErrors from '@/utils/zodFieldErrors';
 import { z } from 'zod';
+import {
+    emailMahasiswaRule,
+    emailStaffRule,
+    nameRule,
+    nimRule,
+    nipRule,
+    majorDepartementRule,
+    passwordRule,
+    passwordConfirmationRule,
+    nameRefine,
+    nimRefine,
+    prodiMahasiswaRefine,
+    departementStaffRefine,
+    passwordRefine,
+} from '@/utils/zodRules.js';
 
 export default function Register({ majorDepartements }) {
     const {
@@ -31,92 +54,53 @@ export default function Register({ majorDepartements }) {
         password_confirmation: '',
     });
 
-    // ── Role switching ─────────────────────────────────────────
-    const lastDistinctChange = useRef(false);
+    // ── Academic status selection ──────────────────────────────
+    const [statusAkademik, setStatusAkademik] = useState('Mahasiswa');
 
-    const emailDomain = data.email.split('@')[1] ?? '';
+    const isMahasiswa = statusAkademik === 'Mahasiswa';
 
-    const isStaff =
-        emailDomain === 'itera.ac.id' ||
-        majorDepartements.some(
-            (md) => md.major_departement_domain === emailDomain,
-        );
-
-    if (isStaff !== lastDistinctChange.current) {
-        lastDistinctChange.current = isStaff;
-        setData('nim_nip', '');
-        setData('major_departement', '');
-        clearErrors('nim_nip', 'major_departement');
-    }
-
-    // ── Dropdown options for the current role ──────────────────
-    const majorDepartementOptions = isStaff
-        ? majorDepartements.map((md) => md.name) // lecturer: whole list
-        : majorDepartements
+    // ── Dropdown options for the current status ────────────────
+    const majorDepartementOptions = isMahasiswa
+        ? majorDepartements
               .filter((md) => md.major_departement_code !== null)
-              .map((md) => md.name); // student: the 42 majors
+              .map((md) => md.name) // mahasiswa: the 42 majors
+        : majorDepartements.map((md) => md.name); // dosen/staff: whole list
+
+    const staffEmailDomains = [
+        ...new Set([
+            'itera.ac.id',
+            ...majorDepartements.map((md) => md.major_departement_domain),
+        ]),
+    ];
 
     const registerSchema = z
         .object({
-            name: z
-                .string()
-                .trim()
-                .min(1, 'Nama is required')
-                .max(255, 'Name is too long'),
-            email: z
-                .string()
-                .regex(
-                    /@(?:[a-z0-9-]+\.)*itera\.ac\.id$/,
-                    'Email must be an ITERA domain email',
-                ),
-            nim_nip: !isStaff
-                ? z.string().regex(/^\d{9}$/, 'NIM must be exactly 9 digits')
-                : z.string().regex(/^\d{18}$/, 'NIP must be exactly 18 digits'),
-            major_departement: z.enum(majorDepartementOptions, {
-                error: 'Select a valid program studi',
-            }),
-            password: z
-                .string()
-                .min(8, 'Password must be at least 8 characters')
-                .regex(/[A-Z]/, 'Password must contain an uppercase letter')
-                .regex(/[a-z]/, 'Password must contain a lowercase letter')
-                .regex(/\d/, 'Password must contain a number'),
-            password_confirmation: z.string(),
+            name: nameRule,
+            email: isMahasiswa
+                ? emailMahasiswaRule
+                : emailStaffRule(staffEmailDomains),
+            nim_nip: isMahasiswa ? nimRule : nipRule,
+            major_departement: majorDepartementRule(majorDepartementOptions),
+            password: passwordRule,
+            password_confirmation: passwordConfirmationRule,
         })
-        .refine((data) => data.password === data.password_confirmation, {
-            message: 'Passwords do not match',
-            path: ['password_confirmation'],
-        })
-        .refine(
-            (data) =>
-                isStaff ||
-                data.email.endsWith(`.${data.nim_nip}@student.itera.ac.id`),
-            {
-                message: 'NIM must match the NIM in your email',
-                path: ['nim_nip'],
-            },
-        )
-        .refine(
-            (data) => {
-                if (isStaff) {
-                    return true;
-                }
+        .refine(...nameRefine({ isMahasiswa }))
+        .refine(...nimRefine({ isMahasiswa }))
+        .refine(...prodiMahasiswaRefine({ isMahasiswa, majorDepartements }))
+        .refine(...departementStaffRefine({ isMahasiswa, majorDepartements }))
+        .refine(...passwordRefine);
 
-                const selected = majorDepartements.find(
-                    (md) => md.name === data.major_departement,
-                );
+    const handleStatusChange = (value) => {
+        const wasMahasiswa = statusAkademik === 'Mahasiswa';
 
-                return (
-                    Boolean(selected) &&
-                    selected.major_departement_code ===
-                        Number(data.nim_nip.slice(3, 5))
-                );
-            },
-            {
-                message: 'Selected Program Studi does not match your NIM',
-                path: ['major_departement'],
-            },
-        );
+        setStatusAkademik(value);
+
+        if (wasMahasiswa !== (value === 'Mahasiswa')) {
+            setData('nim_nip', '');
+            setData('major_departement', '');
+            clearErrors('nim_nip', 'major_departement');
+        }
+    };
 
     const handleFieldChange = (field, value) => {
         setData(field, value);
@@ -130,34 +114,14 @@ export default function Register({ majorDepartements }) {
         }
     };
 
-    const handlePasswordChange = (field, value) => {
-        handleFieldChange(field, value);
-
-        const otherValue =
-            field === 'password' ? data.password_confirmation : data.password;
-
-        if (value !== '' && otherValue !== '') {
-            if (value === otherValue) {
-                clearErrors('password_confirmation');
-            } else {
-                setError('password_confirmation', 'Passwords do not match');
-            }
-        }
-    };
-
     const handleSubmit = (e) => {
         e.preventDefault();
 
         const result = registerSchema.safeParse(data);
 
         if (!result.success) {
-            const fieldErrors = {};
-            for (const issue of result.error.issues) {
-                if (!fieldErrors[issue.path[0]]) {
-                    fieldErrors[issue.path[0]] = issue.message;
-                }
-            }
-            setError(fieldErrors);
+            clearErrors();
+            setError(zodFieldErrors(result.error));
             return;
         }
 
@@ -186,6 +150,16 @@ export default function Register({ majorDepartements }) {
                     onChange={(e) => handleFieldChange('name', e.target.value)}
                     required
                 />
+                <SelectField
+                    name="status_akademik"
+                    label="Status Akademik"
+                    options={['Mahasiswa', 'Dosen', 'Staff']}
+                    icon={GraduationCap}
+                    value={statusAkademik}
+                    autoComplete="off"
+                    onValueChange={handleStatusChange}
+                    required
+                />
                 <EmailField
                     name="email"
                     label="Email"
@@ -200,13 +174,15 @@ export default function Register({ majorDepartements }) {
                 />
                 <NumberField
                     name="nim_nip"
-                    label={isStaff ? 'NIP' : 'NIM'}
+                    label={isMahasiswa ? 'NIM' : 'NIP'}
                     type="number"
                     icon={Hash}
                     value={data.nim_nip}
                     errorMessage={errors.nim_nip}
                     autoComplete="off"
-                    placeholder={isStaff ? '198504122010011001' : '121140154'}
+                    placeholder={
+                        isMahasiswa ? '121140154' : '198504122010011001'
+                    }
                     onChange={(e) =>
                         handleFieldChange('nim_nip', e.target.value)
                     }
@@ -214,16 +190,18 @@ export default function Register({ majorDepartements }) {
                 />
                 <SelectField
                     name="major_departement"
-                    label={isStaff ? 'Program Studi / UPA' : 'Program Studi'}
+                    label={
+                        isMahasiswa ? 'Program Studi' : 'Program Studi / UPA'
+                    }
                     options={majorDepartementOptions}
                     icon={University}
                     value={data.major_departement}
                     errorMessage={errors.major_departement}
                     autoComplete="off"
                     placeholder={
-                        isStaff
-                            ? 'UPA TIK / Teknik Informatika'
-                            : 'Teknik Informatika'
+                        isMahasiswa
+                            ? 'Teknik Informatika'
+                            : 'UPA TIK / Teknik Informatika'
                     }
                     onValueChange={(value) =>
                         handleFieldChange('major_departement', value)
@@ -240,7 +218,7 @@ export default function Register({ majorDepartements }) {
                     autoComplete="new-password"
                     placeholder="Minimum 8 Characters"
                     onChange={(e) =>
-                        handlePasswordChange('password', e.target.value)
+                        handleFieldChange('password', e.target.value)
                     }
                     required
                 />
@@ -254,7 +232,7 @@ export default function Register({ majorDepartements }) {
                     autoComplete="new-password"
                     placeholder="Re-enter your password"
                     onChange={(e) =>
-                        handlePasswordChange(
+                        handleFieldChange(
                             'password_confirmation',
                             e.target.value,
                         )

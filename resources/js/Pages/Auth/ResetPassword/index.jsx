@@ -6,28 +6,21 @@ import PasswordField from '@/components/PasswordField';
 import Button from '@/components/Button';
 import AuthFooter from '@/components/AuthFooter';
 import AuthLayout from '@/layout/AuthLayout';
+import zodFieldErrors from '@/utils/zodFieldErrors';
+import {
+    emailMahasiswaRule,
+    passwordRule,
+    passwordRefine,
+} from '@/utils/zodRules.js';
 import { z } from 'zod';
 
 const resetPasswordSchema = z
     .object({
-        email: z
-            .string()
-            .regex(
-                /^[a-z0-9.-]+\.\d{9}@student\.itera\.ac\.id$/,
-                'Email must follow the format firstname.nim@student.itera.ac.id',
-            ),
-        password: z
-            .string()
-            .min(8, 'Password must be at least 8 characters')
-            .regex(/[A-Z]/, 'Password must contain an uppercase letter')
-            .regex(/[a-z]/, 'Password must contain a lowercase letter')
-            .regex(/\d/, 'Password must contain a number'),
+        email: emailMahasiswaRule,
+        password: passwordRule,
         password_confirmation: z.string(),
     })
-    .refine((data) => data.password === data.password_confirmation, {
-        message: 'Passwords do not match',
-        path: ['password_confirmation'],
-    });
+    .refine(...passwordRefine);
 
 export default function ResetPassword({ email, token }) {
     const {
@@ -79,13 +72,8 @@ export default function ResetPassword({ email, token }) {
         const result = resetPasswordSchema.safeParse(data);
 
         if (!result.success) {
-            const fieldErrors = {};
-            for (const issue of result.error.issues) {
-                if (!fieldErrors[issue.path[0]]) {
-                    fieldErrors[issue.path[0]] = issue.message;
-                }
-            }
-            setError(fieldErrors);
+            clearErrors();
+            setError(zodFieldErrors(result.error));
             return;
         }
 
