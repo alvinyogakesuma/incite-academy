@@ -44,7 +44,17 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+/**
+ * A minimal but structurally valid WAV file - PHP's finfo reports
+ * audio/x-wav, so it satisfies the mimes:wav rule where a plain
+ * fake() file would not.
+ */
+function wavFileBytes(): string
 {
-    // ..
+    $data = str_repeat("\x00", 8);
+
+    return 'RIFF'.pack('V', 36 + strlen($data)).'WAVEfmt '
+        .pack('V', 16).pack('v', 1).pack('v', 1)
+        .pack('V', 8000).pack('V', 8000).pack('v', 1).pack('v', 8)
+        .'data'.pack('V', strlen($data)).$data;
 }

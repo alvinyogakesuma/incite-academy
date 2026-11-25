@@ -12,9 +12,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('question_id')->constrained()->cascadeOnDelete();
             $table->text('answer_content');
-            $table->boolean('is_correct')->default(false);
+            $table->boolean('is_true')->default(false);
             $table->unsignedInteger('order_index')->default(0);
             $table->timestamps();
+
+            $table->unique(['question_id', 'order_index']);
         });
     }
 

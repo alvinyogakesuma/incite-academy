@@ -25,10 +25,12 @@ const emailStaffRule = (staffEmailDomains) =>
             'Email must follow the format name@itera.ac.id or a valid unit domain',
         );
 
+// Local part is lowercase-only, mirroring the registration rules:
+// emails in this system must be lowercase.
 const emailLoginRule = z
     .string()
     .regex(
-        /@(?:[a-z0-9-]+\.)*itera\.ac\.id$/,
+        /^[a-z0-9.-]+@(?:[a-z0-9-]+\.)*itera\.ac\.id$/,
         'Email must be an ITERA domain email',
     );
 
@@ -57,42 +59,45 @@ const passwordConfirmationRule = z
 
 const passwordLoginRule = z.string().min(1, 'Password is required');
 
-const nameRefine = ({ isMahasiswa }) => ({
-    validation: (data) => {
+const nameRefine = ({ isMahasiswa }) => [
+    (data) => {
         if (!isMahasiswa) {
             return true;
         }
 
-        const nameFirstName =
-            data.name.trim().split(/\s+/)[0]?.toLowerCase() ?? '';
-        const emailFirstName = data.email.split('@')[0]?.split('.')[0] ?? '';
+        const nameFirstName = data.name.trim().split(/\s+/)[0].toLowerCase();
+        const emailFirstName = data.email.split('@')[0].split('.')[0];
 
         return nameFirstName === emailFirstName;
     },
-    config: {
+    {
         message: 'First name must match the first name in your email',
         path: ['name'],
     },
-});
+];
 
-const nimRefine = ({ isMahasiswa }) => ({
-    validation: (data) =>
+const nimRefine = ({ isMahasiswa }) => [
+    (data) =>
         !isMahasiswa ||
         data.email.endsWith(`.${data.nim_nip}@student.itera.ac.id`),
-    config: {
+    {
         message: 'NIM must match the NIM in your email',
         path: ['nim_nip'],
     },
-});
+];
 
-const prodiMahasiswaRefine = ({ isMahasiswa, majorDepartements }) => ({
-    validation: (data) => {
+const prodiMahasiswaRefine = ({
+    isMahasiswa,
+    majorDepartements,
+    field = 'major_departement',
+}) => [
+    (data) => {
         if (!isMahasiswa) {
             return true;
         }
 
         const selected = majorDepartements.find(
-            (md) => md.name === data.major_departement,
+            (md) => md.name === data[field],
         );
 
         return (
@@ -100,20 +105,24 @@ const prodiMahasiswaRefine = ({ isMahasiswa, majorDepartements }) => ({
             selected.major_departement_code === Number(data.nim_nip.slice(3, 5))
         );
     },
-    config: {
+    {
         message: 'Selected Program Studi does not match your NIM',
-        path: ['major_departement'],
+        path: [field],
     },
-});
+];
 
-const departementStaffRefine = ({ isMahasiswa, majorDepartements }) => ({
-    validation: (data) => {
+const departementStaffRefine = ({
+    isMahasiswa,
+    majorDepartements,
+    field = 'major_departement',
+}) => [
+    (data) => {
         if (isMahasiswa) {
             return true;
         }
 
         const selected = majorDepartements.find(
-            (md) => md.name === data.major_departement,
+            (md) => md.name === data[field],
         );
 
         return (
@@ -121,20 +130,20 @@ const departementStaffRefine = ({ isMahasiswa, majorDepartements }) => ({
             data.email.endsWith(`@${selected.major_departement_domain}`)
         );
     },
-    config: {
+    {
         message:
             'Selected Program Studi / UPA does not match your email domain',
-        path: ['major_departement'],
+        path: [field],
     },
-});
+];
 
-const passwordRefine = {
-    validation: (data) => data.password === data.password_confirmation,
-    config: {
+const passwordRefine = [
+    (data) => data.password === data.password_confirmation,
+    {
         message: 'Passwords do not match',
         path: ['password_confirmation'],
     },
-};
+];
 
 export {
     emailMahasiswaRule,

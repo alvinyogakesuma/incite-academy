@@ -27,16 +27,13 @@ class UserController extends Controller
             ->get()
             ->map(fn (User $user) => $this->mapUser($user));
 
-        [$programStudi, $upaUpt] = MajorDepartement::query()
+        $majorDepartements = MajorDepartement::query()
             ->orderBy('name')
-            ->get(['name', 'major_departement_code'])
-            ->partition(fn (MajorDepartement $departement) => $departement->major_departement_code !== null)
-            ->map(fn ($partition) => $partition->pluck('name')->values());
+            ->get(['id', 'name', 'major_departement_code', 'major_departement_domain']);
 
         return Inertia::render('Dashboard/Users', [
             'users' => $users,
-            'programStudi' => $programStudi,
-            'upaUpt' => $upaUpt,
+            'majorDepartements' => $majorDepartements,
         ]);
     }
 
@@ -98,7 +95,6 @@ class UserController extends Controller
         return redirect()->route('dashboard.users');
     }
 
-
     /**
      * Resolve a department name to its model.
      */
@@ -121,6 +117,7 @@ class UserController extends Controller
             'name' => $user->name,
             'email' => $user->email,
             'role' => $user->role,
+            'academic_status' => $user->academic_status,
             'nim_nip' => $user->nim_nip,
             'major_department' => $user->majorDepartement?->name,
             'total_points' => $user->total_points,

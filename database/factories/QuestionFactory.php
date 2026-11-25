@@ -17,7 +17,9 @@ class QuestionFactory extends Factory
             'type' => fake()->randomElement(['text', 'listening']),
             'question_content' => fake()->paragraph(),
             'audio_url' => fn (array $attributes) => ($attributes['type'] ?? 'text') === 'listening' ? fake()->imageUrl() : null,
-            'order_index' => fake()->numberBetween(0, 10),
+            // Append after the last sibling so (lesson_id, order_index)
+            // stays unique without every call site sequencing by hand.
+            'order_index' => fn (array $attributes) => (Question::query()->where('lesson_id', $attributes['lesson_id'])->max('order_index') ?? -1) + 1,
         ];
     }
 

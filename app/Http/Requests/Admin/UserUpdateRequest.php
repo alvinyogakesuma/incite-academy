@@ -37,6 +37,7 @@ class UserUpdateRequest extends FormRequest
                 'regex:/@([a-zA-Z0-9.-]+\.)?itera\.ac\.id$/i',
             ],
             'role' => ['required', 'string', Rule::in(['student', 'admin'])],
+            'academic_status' => ['nullable', 'string', Rule::in(['Mahasiswa', 'Dosen', 'Staff'])],
             'nim_nip' => [
                 'required',
                 'string',

@@ -10,15 +10,13 @@ return new class extends Migration
     {
         Schema::create('courses', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->enum('category', [
-                'Reading Comprehension',
-                'Listening Comprehension',
-                'Structure and Writing Expression',
-            ]);
-            $table->string('short_description');
-            $table->text('long_description');
+            $table->string('title')->nullable();
+            $table->string('slug')->nullable()->unique();
+            $table->string('category')->nullable();
+            $table->string('short_description')->nullable();
+            $table->text('long_description')->nullable();
             $table->string('image_url')->nullable();
+            $table->enum('status', ['draft', 'published'])->default('draft');
             $table->unsignedInteger('total_duration')->default(0);
             $table->unsignedInteger('modules_count')->default(0);
             $table->unsignedInteger('lessons_count')->default(0);

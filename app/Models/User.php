@@ -7,10 +7,12 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
-#[Fillable(['name', 'email', 'password', 'role', 'nim_nip', 'major_departement_id', 'total_points', 'google_id'])]
+#[Fillable(['name', 'email', 'password', 'role', 'academic_status', 'nim_nip', 'major_departement_id', 'biography', 'total_points', 'google_id'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -34,11 +36,45 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * The course enrollments the user holds, one row per course.
+     */
+    public function enrollments(): HasMany
+    {
+        return $this->hasMany(Enrollment::class);
+    }
+
+    /**
+     * The equipped character's icon URL, when the student wears
+     * one — resolved from public storage with the same prefix
+     * guard the editors use, so every layout can render it.
+     */
+    public function equippedAvatarUrl(): ?string
+    {
+        $iconUrl = UserAvatar::query()
+            ->where('user_id', $this->id)
+            ->where('is_equipped', true)
+            ->join('avatars', 'avatars.id', '=', 'user_avatars.avatar_id')
+            ->value('avatars.icon_url');
+
+        return $iconUrl !== null && str_starts_with($iconUrl, 'avatars/')
+            ? Storage::disk('public')->url($iconUrl)
+            : $iconUrl;
+    }
+
+    /**
      * Determine if the user is an administrator.
      */
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    /**
+     * Determine if the user is an enrolled student.
+     */
+    public function isMahasiswa(): bool
+    {
+        return $this->academic_status === 'Mahasiswa';
     }
 
     /**

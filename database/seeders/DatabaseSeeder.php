@@ -23,6 +23,10 @@ class DatabaseSeeder extends Seeder
             LessonSeeder::class,
             QuestionSeeder::class,
             AnswerSeeder::class,
+            ChallengeSeeder::class,
+            LearningPathSeeder::class,
+            BadgeSeeder::class,
+            AvatarSeeder::class,
         ]);
 
         if (User::query()->where('email', 'test@example.com')->doesntExist()) {

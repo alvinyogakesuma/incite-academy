@@ -21,7 +21,9 @@ class LessonFactory extends Factory
             'article_content' => fn (array $attributes) => ($attributes['type'] ?? 'article') === 'article' ? fake()->paragraphs(2, true) : null,
             'duration' => fake()->numberBetween(5, 60),
             'points' => fake()->numberBetween(10, 50),
-            'order_index' => fake()->numberBetween(0, 10),
+            // Append after the last sibling so (module_id, order_index)
+            // stays unique without every call site sequencing by hand.
+            'order_index' => fn (array $attributes) => (Lesson::query()->where('module_id', $attributes['module_id'])->max('order_index') ?? -1) + 1,
         ];
     }
 

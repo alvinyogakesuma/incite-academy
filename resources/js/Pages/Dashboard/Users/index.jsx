@@ -1,19 +1,28 @@
 import { useState, useMemo } from 'react';
 import { router } from '@inertiajs/react';
-import orderBy from 'lodash/orderBy';
 import { Plus } from 'lucide-react';
 import AdminLayout from '@/layout/AdminLayout';
 import AdminHeader from '@/components/AdminHeader';
 import SearchBar from '@/components/SearchBar';
 import UserList from '@/components/UserList';
 import Pagination from '@/components/Pagination';
-import UserFormDialog from '@/components/UserFormDialog';
+import UserFormDialog from './UserFormDialog';
 import DeleteConfirmationDialog from '@/components/DeleteConfirmationDialog';
 import Toast from '@/components/Toast';
+import {
+    filterUsers,
+    sortUsers,
+    paginateUsers,
+    shouldShowReset,
+    departmentOptions,
+    nextSortState,
+    pageAfterDelete,
+    formSuccessMessage,
+} from './userTable';
 
 const PAGE_SIZE_OPTIONS = [5, 10, 20];
 
-export default function Users({ users = [], programStudi = [], upaUpt = [] }) {
+export default function Users({ users = [], majorDepartements = [] }) {
     // Search, Filtering, and Sorting State (all client-side)
     const [searchQuery, setSearchQuery] = useState(''); // search bar state
     const [roleFilter, setRoleFilter] = useState('All'); // role selection state
@@ -74,23 +83,18 @@ export default function Users({ users = [], programStudi = [], upaUpt = [] }) {
 
     // Handle sort click toggle
     const handleSort = (field) => {
-        if (sortField === field) {
-            setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
-        } else {
-            setSortField(field);
-            setSortDirection('asc');
-        }
+        const next = nextSortState(field, sortField, sortDirection);
+
+        setSortField(next.field);
+        setSortDirection(next.direction);
         setCurrentPage(1);
     };
 
     // Handle form save/update — the dialog performs the request itself
-    // (via its useForm instance) and calls onSuccess/onError here.
+    // (via Inertia router on react-hook-form submit) and calls onSuccess/onError here.
     const handleFormSuccess = (isEdit) => {
         setIsFormOpen(false);
-        showToast(
-            'success',
-            isEdit ? 'User successfully updated!' : 'User successfully added!',
-        );
+        showToast('success', formSuccessMessage(isEdit));
     };
 
     const handleFormError = () => {
@@ -108,14 +112,12 @@ export default function Users({ users = [], programStudi = [], upaUpt = [] }) {
                 showToast('success', 'User successfully deleted!');
 
                 // Clamp the current page if the last item on it was removed
-                const remainingFiltered = sortedUsers.length - 1;
-                const maxPage = Math.max(
-                    1,
-                    Math.ceil(remainingFiltered / pageSize),
+                const next = pageAfterDelete(
+                    currentPage,
+                    sortedUsers.length - 1,
+                    pageSize,
                 );
-                if (currentPage > maxPage) {
-                    setCurrentPage(maxPage);
-                }
+                setCurrentPage(next);
             },
             onError: () => {
                 showToast('error', 'Failed to delete user.');
@@ -124,65 +126,37 @@ export default function Users({ users = [], programStudi = [], upaUpt = [] }) {
     };
 
     // Stage 1 = filter the users
-    const filteredUsers = useMemo(() => {
-        const query = searchQuery.toLowerCase();
-
-        return users.filter((user) => {
-            // Search match
-            const matchesSearch =
-                query === '' ||
-                user.name.toLowerCase().includes(query) ||
-                user.email.toLowerCase().includes(query) ||
-                user.nim_nip.toLowerCase().includes(query) ||
-                user.major_department.toLowerCase().includes(query);
-
-            // Role match
-            const matchesRole =
-                roleFilter === 'All' || user.role === roleFilter;
-
-            // Department match
-            const matchesDepartment =
-                departmentFilter === 'All' ||
-                user.major_department === departmentFilter;
-
-            return matchesSearch && matchesRole && matchesDepartment;
-        });
-    }, [users, searchQuery, roleFilter, departmentFilter]);
+    const filteredUsers = useMemo(
+        () =>
+            filterUsers(users, {
+                query: searchQuery,
+                roleFilter,
+                departmentFilter,
+            }),
+        [users, searchQuery, roleFilter, departmentFilter],
+    );
 
     // Stage 2 = Sort the Users
     const sortedUsers = useMemo(
-        () =>
-            orderBy(
-                filteredUsers,
-                [
-                    (user) =>
-                        typeof user[sortField] === 'string'
-                            ? user[sortField].toLowerCase()
-                            : user[sortField],
-                ],
-                [sortDirection],
-            ),
+        () => sortUsers(filteredUsers, sortField, sortDirection),
         [filteredUsers, sortField, sortDirection],
     );
 
     // Stage 3 = Paginate the Users
-    const paginatedUsers = useMemo(() => {
-        const start = (currentPage - 1) * pageSize;
-        return sortedUsers.slice(start, start + pageSize);
-    }, [sortedUsers, currentPage, pageSize]);
+    const { items: paginatedUsers, totalPages } = useMemo(
+        () => paginateUsers(sortedUsers, currentPage, pageSize),
+        [sortedUsers, currentPage, pageSize],
+    );
 
-    const totalPages = Math.max(1, Math.ceil(sortedUsers.length / pageSize));
+    const showReset = shouldShowReset({
+        searchQuery,
+        roleFilter,
+        departmentFilter,
+        sortField,
+        sortDirection,
+    });
 
-    const showReset =
-        searchQuery ||
-        roleFilter !== 'All' ||
-        departmentFilter !== 'All' ||
-        sortField !== 'name' ||
-        sortDirection !== 'asc';
-
-    const departments = [
-        ...new Set(users.map((user) => user.major_department)),
-    ];
+    const departments = departmentOptions(users);
 
     const userFilters = [
         {
@@ -254,8 +228,7 @@ export default function Users({ users = [], programStudi = [], upaUpt = [] }) {
                     user={userToEdit}
                     onSuccess={handleFormSuccess}
                     onError={handleFormError}
-                    programStudi={programStudi}
-                    upaUpt={upaUpt}
+                    majorDepartements={majorDepartements}
                 />
 
                 {/* ========== DELETE CONFIRMATION ALERT DIALOG (MODAL) ========== */}

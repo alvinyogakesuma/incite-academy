@@ -13,8 +13,11 @@ return new class extends Migration
             $table->foreignId('course_id')->constrained()->cascadeOnDelete();
             $table->string('title');
             $table->unsignedInteger('order_index')->default(0);
+            $table->unsignedInteger('lessons_count')->default(0);
             $table->unsignedInteger('total_points')->default(0);
             $table->timestamps();
+
+            $table->unique(['course_id', 'order_index']);
         });
     }
 

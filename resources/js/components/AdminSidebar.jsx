@@ -1,7 +1,15 @@
 import { useState } from 'react';
 import { usePage } from '@inertiajs/react';
 import { Dialog } from 'radix-ui';
-import { LayoutDashboard, Users, BookOpen } from 'lucide-react';
+import {
+    Award,
+    BookOpen,
+    Compass,
+    LayoutDashboard,
+    Swords,
+    UserCircle,
+    Users,
+} from 'lucide-react';
 import AdminSidebarHeader from './AdminSidebarHeader';
 import AdminSidebarMenu from './AdminSidebarMenu';
 import AdminSidebarProfile from './AdminSidebarProfile';
@@ -42,7 +50,33 @@ export default function AdminSidebar({ isMobileOpen, setIsMobileOpen }) {
             name: 'Courses',
             icon: BookOpen,
             href: '/dashboard/courses',
-            active: cleanUrl.startsWith('/dashboard/courses'),
+            active:
+                cleanUrl.startsWith('/dashboard/courses') ||
+                cleanUrl.startsWith('/dashboard/lessons'),
+        },
+        {
+            name: 'Challenges',
+            icon: Swords,
+            href: '/dashboard/challenges',
+            active: cleanUrl.startsWith('/dashboard/challenges'),
+        },
+        {
+            name: 'Learning Paths',
+            icon: Compass,
+            href: '/dashboard/learning-paths',
+            active: cleanUrl.startsWith('/dashboard/learning-paths'),
+        },
+        {
+            name: 'Badges',
+            icon: Award,
+            href: '/dashboard/badges',
+            active: cleanUrl.startsWith('/dashboard/badges'),
+        },
+        {
+            name: 'Avatars',
+            icon: UserCircle,
+            href: '/dashboard/avatars',
+            active: cleanUrl.startsWith('/dashboard/avatars'),
         },
     ];
 

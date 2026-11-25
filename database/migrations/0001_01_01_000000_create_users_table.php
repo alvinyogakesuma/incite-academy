@@ -19,6 +19,8 @@ return new class extends Migration
             $table->foreignId('major_departement_id')->nullable()->constrained('majors_departements')->nullOnDelete();
             $table->string('nim_nip', 50)->nullable()->unique();
             $table->enum('role', ['student', 'admin'])->default('student');
+            $table->enum('academic_status', ['Mahasiswa', 'Dosen', 'Staff'])->default('Mahasiswa')->after('role');
+            $table->text('biography')->nullable();
             $table->unsignedInteger('total_points')->default(0);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();

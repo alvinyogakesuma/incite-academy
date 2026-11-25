@@ -27,7 +27,7 @@ class GoogleAuthController extends Controller
 
         $email = strtolower($googleUser->getEmail() ?? '');
 
-        if (! str_ends_with($email, 'itera.ac.id')) {
+        if (! preg_match('/@(?:[a-z0-9-]+\.)*itera\.ac\.id$/', $email)) {
             return redirect('/login')->with('error', 'Only ITERA institutional Google accounts (@itera.ac.id) may sign in.');
         }
 
@@ -46,9 +46,12 @@ class GoogleAuthController extends Controller
                 'name' => $googleUser->getName(),
                 'email' => $email,
                 'google_id' => $googleUser->getId(),
-                'email_verified_at' => now(),
             ]);
         }
+
+        // Google has already verified ownership of the address, so an account
+        // signed in through OAuth never needs the app's verification flow.
+        $user->markEmailAsVerified();
 
         Auth::login($user);
 

@@ -6,6 +6,7 @@ export default function AdminHeader({
     label,
     onClick,
     icon: Icon,
+    loading = false,
 }) {
     return (
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
@@ -19,7 +20,7 @@ export default function AdminHeader({
             </div>
             {onClick && (
                 <div className="self-start sm:self-center">
-                    <Button onClick={onClick}>
+                    <Button onClick={onClick} loading={loading}>
                         {Icon && <Icon className="size-4 shrink-0" />}
                         {label}
                     </Button>

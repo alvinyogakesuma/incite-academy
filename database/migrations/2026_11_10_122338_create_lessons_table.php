@@ -19,6 +19,8 @@ return new class extends Migration
             $table->unsignedInteger('points')->default(0);
             $table->unsignedInteger('order_index')->default(0);
             $table->timestamps();
+
+            $table->unique(['module_id', 'order_index']);
         });
     }
 

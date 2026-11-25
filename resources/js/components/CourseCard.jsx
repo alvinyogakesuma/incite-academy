@@ -5,6 +5,8 @@ export default function CourseCard({
     title,
     description,
     gradient,
+    imageUrl = null,
+    status = 'published',
     icon: Icon,
     badgeText,
     metaItems = [],
@@ -15,17 +17,41 @@ export default function CourseCard({
 }) {
     return (
         <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-neutral-950/5 bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
-            {/* Cover Gradient with overlay icon */}
+            {/* Cover Thumbnail / Gradient with overlay icon */}
             <div
-                style={{ background: gradient, height: '150px' }}
-                className="relative flex w-full shrink-0 items-center justify-center"
+                style={{
+                    background: imageUrl ? undefined : gradient,
+                    height: '150px',
+                }}
+                className="relative flex w-full shrink-0 items-center justify-center overflow-hidden"
             >
-                <div className="absolute inset-0 bg-black/10 mix-blend-overlay" />
-                {Icon && (
-                    <Icon
-                        style={{ width: '48px', height: '48px' }}
-                        className="text-white/90 drop-shadow-md transition-transform duration-300 group-hover:scale-110"
+                {imageUrl ? (
+                    <img
+                        src={imageUrl}
+                        alt={title}
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
+                ) : (
+                    Icon && (
+                        <Icon
+                            style={{ width: '48px', height: '48px' }}
+                            className="relative z-10 text-white/90 drop-shadow-md transition-transform duration-300 group-hover:scale-110"
+                        />
+                    )
+                )}
+                <div className="pointer-events-none absolute inset-0 bg-black/15" />
+
+                {status === 'draft' && (
+                    <span
+                        style={{
+                            position: 'absolute',
+                            top: '12px',
+                            left: '12px',
+                        }}
+                        className="font-inter text-caption rounded-full border border-white/20 bg-neutral-950/70 px-2.5 py-1 font-bold tracking-wider text-white uppercase backdrop-blur-md"
+                    >
+                        Draft
+                    </span>
                 )}
 
                 {/* Badge overlay */}

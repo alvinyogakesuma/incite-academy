@@ -34,6 +34,9 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
+                // The student's equipped character, so the navbar
+                // and sidebars can render it anywhere.
+                'equippedAvatarUrl' => $request->user()?->equippedAvatarUrl(),
             ],
             'error' => $request->session()->get('error'),
             'ziggy' => fn () => [

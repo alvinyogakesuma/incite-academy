@@ -14,11 +14,14 @@
 /.zed
 /auth.json
 /bootstrap/ssr
+/coverage
+/screenshots
 /node_modules
 /public/build
 /public/fonts-manifest.dev.json
 /public/hot
 /public/storage
+/test-results.json
 /storage/*.key
 /storage/pail
 /vendor

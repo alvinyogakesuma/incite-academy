@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
@@ -40,6 +41,11 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'academic_status' => [
+                'nullable',
+                'string',
+                Rule::in(['Mahasiswa', 'Dosen', 'Staff']),
+            ],
             'email' => [
                 'required',
                 'string',
@@ -71,6 +77,7 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'academic_status' => $request->academic_status ?? 'Mahasiswa',
             'nim_nip' => $request->nim_nip,
             'major_departement_id' => $majorDepartement->id,
         ]);

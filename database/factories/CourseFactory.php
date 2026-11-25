@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\Category;
 use App\Models\Course;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -14,14 +15,11 @@ class CourseFactory extends Factory
     {
         return [
             'title' => fake()->words(4, true),
-            'category' => fake()->randomElement([
-                'Reading Comprehension',
-                'Listening Comprehension',
-                'Structure and Writing Expression',
-            ]),
+            'category' => fake()->randomElement(Category::cases())->value,
             'short_description' => fake()->sentence(),
             'long_description' => fake()->paragraphs(3, true),
             'image_url' => fake()->optional()->imageUrl(),
+            'status' => 'published',
             'total_duration' => fake()->numberBetween(60, 300),
             'modules_count' => fake()->numberBetween(1, 5),
             'lessons_count' => fake()->numberBetween(3, 15),
@@ -29,24 +27,40 @@ class CourseFactory extends Factory
         ];
     }
 
+    public function draft(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'title' => null,
+            'category' => null,
+            'short_description' => null,
+            'long_description' => null,
+            'image_url' => null,
+            'status' => 'draft',
+            'total_duration' => 0,
+            'modules_count' => 0,
+            'lessons_count' => 0,
+            'total_points' => 0,
+        ]);
+    }
+
     public function reading(): static
     {
         return $this->state(fn (array $attributes) => [
-            'category' => 'Reading Comprehension',
+            'category' => Category::ReadingComprehension->value,
         ]);
     }
 
     public function listening(): static
     {
         return $this->state(fn (array $attributes) => [
-            'category' => 'Listening Comprehension',
+            'category' => Category::ListeningComprehension->value,
         ]);
     }
 
     public function structure(): static
     {
         return $this->state(fn (array $attributes) => [
-            'category' => 'Structure and Writing Expression',
+            'category' => Category::StructureAndWritingExpression->value,
         ]);
     }
 }

@@ -1,6 +1,12 @@
 import { Form, Select } from 'radix-ui';
 import { ChevronDown } from 'lucide-react';
 
+/**
+ * Shared select field — plain string options render value-as-
+ * label, and { value, label } object options decouple them (an
+ * id-keyed select displays a clean label while the value stays
+ * the key). Ported trigger/content on the current design tokens.
+ */
 export default function SelectField({
     name,
     label,
@@ -17,15 +23,25 @@ export default function SelectField({
 }) {
     const isInvalid = Boolean(errorMessage);
 
-    const renderItem = (option) => (
-        <Select.Item
-            key={option}
-            value={option}
-            className="font-inter data-[highlighted]:bg-primary-50/60 data-[highlighted]:text-primary-700 data-[state=checked]:text-primary-700 text-body-sm flex cursor-pointer items-center truncate rounded-xl px-3.5 py-2.5 text-slate-700 transition-colors duration-150 outline-none select-none data-[state=checked]:font-bold"
-        >
-            <Select.ItemText>{option}</Select.ItemText>
-        </Select.Item>
-    );
+    // Options may be plain strings or { value, label } objects —
+    // the object form lets id-keyed selects display a clean label
+    // while the value stays the key.
+    const normalizeOption = (option) =>
+        typeof option === 'object' ? option : { value: option, label: option };
+
+    const renderItem = (option) => {
+        const { value, label } = normalizeOption(option);
+
+        return (
+            <Select.Item
+                key={value}
+                value={value}
+                className="font-inter data-[highlighted]:bg-primary-50/60 data-[highlighted]:text-primary-700 data-[state=checked]:text-primary-700 text-body-sm flex cursor-pointer items-center truncate rounded-xl px-3.5 py-2.5 text-slate-700 transition-colors duration-150 outline-none select-none data-[state=checked]:font-bold"
+            >
+                <Select.ItemText>{label}</Select.ItemText>
+            </Select.Item>
+        );
+    };
 
     // the Select tree — identical in both modes (Select.* is form-agnostic)
     const selectTree = (

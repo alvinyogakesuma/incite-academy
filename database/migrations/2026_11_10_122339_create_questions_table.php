@@ -17,6 +17,8 @@ return new class extends Migration
             $table->unsignedInteger('audio_duration')->nullable();
             $table->unsignedInteger('order_index')->default(0);
             $table->timestamps();
+
+            $table->unique(['lesson_id', 'order_index']);
         });
     }
 

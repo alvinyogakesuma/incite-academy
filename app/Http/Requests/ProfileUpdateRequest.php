@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\MajorDepartement;
 use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -26,6 +27,12 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+            'nim_nip' => ['nullable', 'string', 'max:50'],
+            'major_departement_id' => [
+                'nullable',
+                Rule::exists(MajorDepartement::class, 'id'),
+            ],
+            'biography' => ['nullable', 'string'],
         ];
     }
 }

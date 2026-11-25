@@ -1,5 +1,6 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SelectField from '@/components/SelectField';
+import { pageItems } from '@/components/paginationPages';
 
 export default function Pagination({
     currentPage,
@@ -40,26 +41,19 @@ export default function Pagination({
                 </button>
 
                 {/* Page Numbers */}
-                {Array.from({ length: totalPages }).map((_, i) => {
-                    const pageNum = i + 1;
-                    if (
-                        totalPages > 5 &&
-                        Math.abs(currentPage - pageNum) > 1 &&
-                        pageNum !== 1 &&
-                        pageNum !== totalPages
-                    ) {
-                        if (pageNum === 2 || pageNum === totalPages - 1) {
-                            return (
-                                <span
-                                    key={pageNum}
-                                    className="px-1 font-mono text-xs text-neutral-500/40 select-none"
-                                >
-                                    ...
-                                </span>
-                            );
-                        }
-                        return null;
+                {pageItems(currentPage, totalPages).map((item, i) => {
+                    if (item.type === 'ellipsis') {
+                        return (
+                            <span
+                                key={`ellipsis-${i}`}
+                                className="px-1 font-mono text-xs text-neutral-500/40 select-none"
+                            >
+                                ...
+                            </span>
+                        );
                     }
+
+                    const pageNum = item.page;
 
                     return (
                         <button

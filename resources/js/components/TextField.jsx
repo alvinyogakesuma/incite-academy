@@ -30,7 +30,7 @@ export default function TextField({
                     />
                 )}
                 <input
-                    className={`font-inter text-body-sm w-full rounded-full border border-neutral-950/5 py-2.5 pr-4.5 pl-11 transition-all duration-200 ease-in-out outline-none placeholder:text-neutral-500/50 focus:ring-4 ${readOnly ? 'cursor-not-allowed border-neutral-950/5 bg-neutral-100 text-neutral-500' : 'bg-primary-50/40 focus:border-primary-700 focus:ring-primary-700/10 text-neutral-900 hover:border-neutral-950/15 focus:bg-white'}`}
+                    className={`font-inter text-body-sm w-full rounded-full border border-neutral-950/5 py-2.5 transition-all duration-200 ease-in-out outline-none placeholder:text-neutral-500/50 focus:ring-4 ${Icon ? 'pr-4.5 pl-11' : 'px-4.5'} ${readOnly ? 'cursor-not-allowed border-neutral-950/5 bg-neutral-100 text-neutral-500' : 'bg-primary-50/40 focus:border-primary-700 focus:ring-primary-700/10 text-neutral-900 hover:border-neutral-950/15 focus:bg-white'}`}
                     id={name}
                     name={name}
                     type={type}
@@ -68,7 +68,7 @@ export default function TextField({
                 )}
                 <Form.Control asChild>
                     <input
-                        className={`font-inter text-body-sm w-full rounded-full border border-neutral-950/5 py-2.5 pr-4.5 pl-11 transition-all duration-200 ease-in-out outline-none placeholder:text-neutral-500/50 focus:ring-4 ${readOnly ? 'cursor-not-allowed border-neutral-950/5 bg-neutral-100 text-neutral-500' : 'bg-primary-50/40 focus:border-primary-700 focus:ring-primary-700/10 text-neutral-900 hover:border-neutral-950/15 focus:bg-white'}`}
+                        className={`font-inter text-body-sm w-full rounded-full border border-neutral-950/5 py-2.5 transition-all duration-200 ease-in-out outline-none placeholder:text-neutral-500/50 focus:ring-4 ${Icon ? 'pr-4.5 pl-11' : 'px-4.5'} ${readOnly ? 'cursor-not-allowed border-neutral-950/5 bg-neutral-100 text-neutral-500' : 'bg-primary-50/40 focus:border-primary-700 focus:ring-primary-700/10 text-neutral-900 hover:border-neutral-950/15 focus:bg-white'}`}
                         id={name}
                         name={name}
                         type={type}

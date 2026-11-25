@@ -37,6 +37,25 @@ test('new users can register', function () {
     expect($user->nim_nip)->toBe('121140154');
     expect($user->major_departement_id)->not->toBeNull();
     expect($user->role)->toBe('student');
+    expect($user->academic_status)->toBe('Mahasiswa');
+});
+
+test('registration persists a staff academic status', function () {
+    $this->seed(MajorDepartementSeeder::class);
+
+    $this->post('/register', [
+        'name' => 'Budi',
+        'email' => 'budi@itera.ac.id',
+        'academic_status' => 'Dosen',
+        'nim_nip' => '198504122010011001',
+        'major_departement' => 'Teknik Informatika',
+        'password' => 'Password123',
+        'password_confirmation' => 'Password123',
+    ]);
+
+    $user = User::where('email', 'budi@itera.ac.id')->first();
+
+    expect($user->academic_status)->toBe('Dosen');
 });
 
 test('registration sends an email verification notification', function () {

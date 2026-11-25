@@ -2,14 +2,14 @@
 
 use App\Models\User;
 
-test('dashboard page is displayed for admin users', function () {
+test('dashboard redirects admins to the users management', function () {
     $user = User::factory()->create([
         'role' => 'admin',
     ]);
 
     $response = $this->actingAs($user)->get('/dashboard');
 
-    $response->assertStatus(200);
+    $response->assertRedirect('/dashboard/users');
 });
 
 test('student users are forbidden from the dashboard page', function () {

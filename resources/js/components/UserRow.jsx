@@ -1,31 +1,6 @@
 import { Avatar, Tooltip } from 'radix-ui';
 import { Star, Edit2, Trash2 } from 'lucide-react';
-
-const AVATAR_COLOR_CLASSES = [
-    'bg-pink-100 text-pink-700 border-pink-200/50',
-    'bg-blue-100 text-blue-700 border-blue-200/50',
-    'bg-teal-100 text-teal-700 border-teal-200/50',
-    'bg-amber-100 text-amber-700 border-amber-200/50',
-    'bg-purple-100 text-purple-700 border-purple-200/50',
-    'bg-emerald-100 text-emerald-700 border-emerald-200/50',
-    'bg-indigo-100 text-indigo-700 border-indigo-200/50',
-];
-
-export function getAvatarStyles(name) {
-    const hash = name
-        .split('')
-        .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return AVATAR_COLOR_CLASSES[hash % AVATAR_COLOR_CLASSES.length];
-}
-
-export function getInitials(name) {
-    return name
-        .split(' ')
-        .map((n) => n[0])
-        .slice(0, 2)
-        .join('')
-        .toUpperCase();
-}
+import { getAvatarStyles, getInitials } from '@/utils/userAvatar';
 
 export function UserAvatar({ name, size = 'sm' }) {
     const sizeClass = size === 'lg' ? 'size-10 text-sm' : 'size-9 text-xs';

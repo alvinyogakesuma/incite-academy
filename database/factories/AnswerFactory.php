@@ -15,22 +15,20 @@ class AnswerFactory extends Factory
         return [
             'question_id' => QuestionFactory::new(),
             'answer_content' => fake()->sentence(),
-            'is_correct' => fake()->boolean(),
-            'order_index' => fake()->numberBetween(0, 5),
+            'is_true' => false,
+            // Append after the last sibling so (question_id, order_index)
+            // stays unique without every call site sequencing by hand.
+            'order_index' => fn (array $attributes) => (Answer::query()->where('question_id', $attributes['question_id'])->max('order_index') ?? -1) + 1,
         ];
     }
 
+    /**
+     * The row marked as its question's correct answer.
+     */
     public function correct(): static
     {
         return $this->state(fn (array $attributes) => [
-            'is_correct' => true,
-        ]);
-    }
-
-    public function incorrect(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'is_correct' => false,
+            'is_true' => true,
         ]);
     }
 }

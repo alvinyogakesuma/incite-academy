@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
-import { useForm } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
+import { router } from '@inertiajs/react';
+import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { KeyRound, Mail } from 'lucide-react';
 import { Form } from 'radix-ui';
 import EmailField from '@/components/EmailField';
@@ -7,7 +9,6 @@ import Button from '@/components/Button';
 import AuthFooter from '@/components/AuthFooter';
 import Toast from '@/components/Toast';
 import AuthLayout from '@/layout/AuthLayout';
-import zodFieldErrors from '@/utils/zodFieldErrors';
 import { emailMahasiswaRule } from '@/utils/zodRules.js';
 import { z } from 'zod';
 
@@ -16,67 +17,98 @@ const forgotPasswordSchema = z.object({
 });
 
 export default function ForgotPassword({ status }) {
-    const [statusToastOpen, setStatusToastOpen] = useState(Boolean(status));
+    const [toast, setToast] = useState({
+        open: false,
+        type: 'success',
+        title: 'Reset Link Sent',
+        description: '',
+    });
 
     useEffect(() => {
-        if (status) {
-            setStatusToastOpen(true);
-        }
-    }, [status]);
-
-    const { data, setData, post, processing, errors, setError, clearErrors } =
-        useForm({
-            email: '',
-        });
-
-    const handleFieldChange = (field, value) => {
-        setData(field, value);
-
-        const result = forgotPasswordSchema.shape[field].safeParse(value);
-
-        if (result.success) {
-            clearErrors(field);
-        } else {
-            setError(field, result.error.issues[0].message);
-        }
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        const result = forgotPasswordSchema.safeParse(data);
-
-        if (!result.success) {
-            clearErrors();
-            setError(zodFieldErrors(result.error));
+        if (!status) {
             return;
         }
 
-        clearErrors();
-        post('/forgot-password');
+        setToast({
+            open: true,
+            type: 'success',
+            title: 'Reset Link Sent',
+            description: status,
+        });
+    }, [status]);
+
+    const [isPending, setIsPending] = useState(false);
+
+    const {
+        control,
+        handleSubmit,
+        clearErrors,
+        setError,
+        formState: { errors },
+    } = useForm({
+        resolver: zodResolver(forgotPasswordSchema),
+        mode: 'onChange',
+        defaultValues: {
+            email: '',
+        },
+    });
+
+    const onValid = (values) => {
+        if (isPending) {
+            return;
+        }
+
+        router.post('/forgot-password', values, {
+            onStart: () => setIsPending(true),
+            onFinish: () => setIsPending(false),
+            onSuccess: (page) => {
+                const nextStatus = page.props.status;
+                if (nextStatus) {
+                    setToast({
+                        open: true,
+                        type: 'success',
+                        title: 'Reset Link Sent',
+                        description: nextStatus,
+                    });
+                }
+            },
+            onError: (serverErrors) => {
+                clearErrors();
+                for (const [field, message] of Object.entries(serverErrors)) {
+                    setError(field, { type: 'server', message });
+                }
+            },
+        });
     };
 
     return (
         <>
             <Form.Root
                 className="flex w-full flex-col gap-5"
-                onSubmit={handleSubmit}
+                onSubmit={handleSubmit(onValid)}
                 noValidate
             >
-                <EmailField
+                <Controller
+                    control={control}
                     name="email"
-                    label="Email"
-                    type="email"
-                    icon={Mail}
-                    value={data.email}
-                    errorMessage={errors.email}
-                    autoComplete="email"
-                    placeholder="alvin.121140154@student.itera.ac.id"
-                    onChange={(e) => handleFieldChange('email', e.target.value)}
-                    required
+                    render={({ field }) => (
+                        <EmailField
+                            name="email"
+                            label="Email"
+                            type="email"
+                            icon={Mail}
+                            value={field.value ?? ''}
+                            errorMessage={errors.email?.message}
+                            autoComplete="email"
+                            placeholder="alvin.121140154@student.itera.ac.id"
+                            onChange={(e) => field.onChange(e.target.value)}
+                            onBlur={field.onBlur}
+                            required
+                        />
+                    )}
                 />
 
-                <Button as="submit" fullWidth loading={processing}>
+                <Button as="submit" fullWidth loading={isPending}>
                     Send Reset Link
                 </Button>
 
@@ -88,11 +120,11 @@ export default function ForgotPassword({ status }) {
             </Form.Root>
 
             <Toast
-                open={statusToastOpen}
-                onOpenChange={setStatusToastOpen}
-                title="Reset Link Sent"
-                description={status}
-                type="success"
+                open={toast.open}
+                onOpenChange={(open) => setToast((prev) => ({ ...prev, open }))}
+                title={toast.title}
+                description={toast.description}
+                type={toast.type}
             />
         </>
     );

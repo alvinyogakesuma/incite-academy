@@ -2,12 +2,12 @@
 
 use App\Models\User;
 
-test('home page is displayed for verified users', function () {
+test('home redirects to the course catalog', function () {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->get('/home');
 
-    $response->assertStatus(200);
+    $response->assertRedirect('/courses');
 });
 
 test('guests are redirected to the login page', function () {

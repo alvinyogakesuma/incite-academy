@@ -41,8 +41,7 @@ test('admin can view the users management page', function () {
         ->assertOk()
         ->assertInertia(fn ($assert) => $assert
             ->has('users')
-            ->has('programStudi')
-            ->has('upaUpt'));
+            ->has('majorDepartements'));
 });
 
 test('students are forbidden from the users management page', function () {
@@ -76,6 +75,37 @@ test('admin can create a user', function () {
         ->and($user->major_departement_id)->toBe($this->majorDepartement->id)
         ->and($user->total_points)->toBe(100)
         ->and($user->password)->not->toBeNull();
+});
+
+test('store persists the academic status', function () {
+    $this->actingAs($this->admin)
+        ->post(route('dashboard.users.store'), [
+            'name' => 'New Lecturer',
+            'email' => 'lecturer@itera.ac.id',
+            'role' => 'admin',
+            'academic_status' => 'Dosen',
+            'nim_nip' => '198504122010011001',
+            'major_department' => $this->majorDepartement->name,
+            'total_points' => 0,
+        ])
+        ->assertRedirect(route('dashboard.users'));
+
+    expect(User::query()->where('email', 'lecturer@itera.ac.id')->first()->academic_status)
+        ->toBe('Dosen');
+});
+
+test('store rejects an invalid academic status', function () {
+    $this->actingAs($this->admin)
+        ->post(route('dashboard.users.store'), [
+            'name' => 'New User',
+            'email' => 'new.user@student.itera.ac.id',
+            'role' => 'student',
+            'academic_status' => 'Alumni',
+            'nim_nip' => '123456789',
+            'major_department' => $this->majorDepartement->name,
+            'total_points' => 0,
+        ])
+        ->assertInvalid('academic_status');
 });
 
 test('store rejects invalid data', function (array $payload) {
